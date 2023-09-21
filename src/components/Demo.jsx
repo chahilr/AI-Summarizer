@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { copy, linkIcon, loader, tick } from '../assets';
 import { useLazyGetSummaryQuery } from '../services/article';
 
-export const Demo = () => {
+const Demo = () => {
   const [article, setArticle] = useState({
     url: '',
     summary: '',
   });
   const [allArticles, setAllArticles] = useState([]);
+  const [copied, setCopied] = useState();
 
   const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
 
@@ -30,6 +31,12 @@ export const Demo = () => {
       setAllArticles(updatedArticles);
       localStorage.setItem('articles', JSON.stringify(updatedArticles));
     }
+  };
+
+  const handleCopy = (copyUrl) => {
+    setCopied(copyUrl);
+    navigator.clipboard.writeText(copyUrl);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   return (
@@ -72,8 +79,9 @@ export const Demo = () => {
             >
               <div className="copy_btn">
                 <img
-                  src={copy}
+                  src={copied === item.url ? tick : copy}
                   alt="copy_icon"
+                  onClick={() => handleCopy(item.url)}
                   className="w-[40%] h-[40%] object-contain"
                 />
               </div>
@@ -114,3 +122,5 @@ export const Demo = () => {
     </section>
   );
 };
+
+export default Demo;
